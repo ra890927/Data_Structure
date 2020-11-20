@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <windows.h>
 using namespace std;
 
 struct Node{
@@ -7,21 +8,23 @@ struct Node{
 	Node *left, *right;
 };
 
-bool is_error = false;
-
+//judge whether c is operator or not
 bool is_operator(char c){
 	if(c == '+' || c == '-' || c == '*' || c == '/') return true;
 	return false;
 }
 
+//judge whether c is number or not
 bool is_number(char c){
 	if(c >= '0' && c <= '9') return true;
 	return false;
 }
 
+//judge +, -, *, / priority
 bool oper_priority(char a, char b){
 	if(!b) return true;
 
+	//because +, - priority is lower imples +, - have higher level in binary tree
 	if(a == '+' || a == '-') return true;
 	else if(a == '*' || a == '/'){
 		if(b == '*' || b == '/') return true;
@@ -31,6 +34,7 @@ bool oper_priority(char a, char b){
 	return false;
 }
 
+//compute the node
 double compute_node(double a, double b, char op){
 	switch(op){
 		case '+':
@@ -46,6 +50,7 @@ double compute_node(double a, double b, char op){
 	return 0;
 }
 
+//node initialize
 Node *node_init(){
 	Node *temp = new Node;
 	temp -> op = 0;
@@ -55,7 +60,9 @@ Node *node_init(){
 	return temp;
 }
 
+//biuld leaf node
 Node *build_leaf(string s, bool is_signed){
+	//transfer string to int
 	int64_t num = 0;
 	for(int64_t i = is_signed & 1; i < s.length(); i++){
 		num *= 10;
@@ -69,11 +76,15 @@ Node *build_leaf(string s, bool is_signed){
 	return temp;
 }
 
+//build node and link as binary tree
 Node *build_node(string s){
 	Node *temp = new Node;
 
-	int sub_i = -1;
-	int sub_cnt = 0;
+	int sub_i = -1;		//record the last -'s index
+	int sub_cnt = 0;	//record how many -
+
+	//jump over index 0
+	//judge whether separate strirng into two substring or not
 	bool check = true;
 	for(int64_t i = 1; i < s.length(); i++){
 		if(is_operator(s[i])){
@@ -84,11 +95,10 @@ Node *build_node(string s){
 			}
 		}
 	}
-
+	//if noly one and the index of - is 1 ex. (-10)
 	if(sub_cnt == 1 && sub_i == 1) check = true;
 
-	//cout << s << endl;
-
+	//if the string can't be separate
 	if(check){
 		if(s[0] == '-') return build_leaf(s, true);
 		else if(is_number(s[0])) return build_leaf(s, false);
@@ -100,21 +110,16 @@ Node *build_node(string s){
 
 			return temp;
 		}
-		else{
-			is_error = true;
-			printf("Illegal input.\n");
-			return node_init();
-		}
 	}
 
-	char it = 0;
-	int index = 0;
-	stack<char> sta;
+	char it = 0;	//record the separate operator
+	int index = 0;	//record the separate operator's index
+	string sta;		//record the parentheses completeness
 	for(int64_t i = 0; i < s.length(); i++){
-		if(s[i] == '(') sta.push('(');
+		if(s[i] == '(') sta.push_back('(');
 		else if(s[i] == ')'){
-			if(sta.top() == '(') sta.pop();
-			else sta.push(')');
+			if(!sta.empty() && sta[sta.length() - 1] == '(') sta.pop_back();
+			else sta.push_back(')');
 		}
 		else if(sta.empty() && is_operator(s[i]) && oper_priority(s[i], it)){
 			it = s[i];
@@ -122,6 +127,13 @@ Node *build_node(string s){
 		}
 	}
 
+	//if there are no operator can be separate ex.(1+2)
+	if(!index){
+		s.assign(s, 1, s.length() - 2);
+		return build_node(s);
+	}
+
+	//build node
 	if(is_operator(it)){
 		temp->op = s[index];
 
@@ -129,23 +141,21 @@ Node *build_node(string s){
 		a.assign(s, 0, index);
 		b.assign(s, index + 1, s.length());
 
+		//after separating, the substring might have parenteses
 		if(a[0] == '(' && a[a.length() - 1] == ')')
 			a.assign(a, 1, a.length() - 2);
 		if(b[0] == '(' && b[b.length() - 1] == ')')
 			b.assign(b, 1, b.length() - 2);
-
-		//cout << a << " " << b << endl;
 
 		temp -> left = build_node(a);
 		temp -> right = build_node(b);
 		temp -> value = compute_node(temp -> left -> value, temp -> right -> value, temp -> op);
 	}
 
-	//cout << "\n\n";
-
 	return temp;
 }
 
+//delete binary tree
 Node *delete_node(Node *root){
 	if(root -> left) root -> left = delete_node(root -> left);
 	if(root -> right) root -> right = delete_node(root -> right);
@@ -157,15 +167,21 @@ void posorder_traversal(Node *root){
 	if(root){
 		posorder_traversal(root -> left);
 		posorder_traversal(root -> right);
-		if(!root -> op) printf("%.0lf ", root -> value);
-		else printf("%c ", root -> op);
+		if(!root -> op){
+			if(root -> value < 0) printf("(%.0lf)", root -> value);
+			else printf("%.0lf", root -> value);
+		}
+		else printf("%c", root -> op);
 	}
 }
 
 void preorder_traversal(Node *root){
 	if(root){
-		if(!root -> op) printf("%.0lf ", root -> value);
-		else printf("%c ", root -> op);
+		if(!root -> op){
+			if(root -> value < 0) printf("(%.0lf)", root -> value);
+			else printf("%.0lf", root -> value);
+		}
+		else printf("%c", root -> op);
 		preorder_traversal(root -> left);
 		preorder_traversal(root -> right);
 	}
@@ -174,8 +190,11 @@ void preorder_traversal(Node *root){
 void inorder_traversal(Node *root){
 	if(root){
 		preorder_traversal(root -> left);
-		if(!root -> op) printf("%.0lf ", root -> value);
-		else printf("%c ", root -> op);
+		if(!root -> op){
+			if(root -> value < 0) printf("(%.0lf)", root -> value);
+			else printf("%.0lf", root -> value);
+		}
+		else printf("%c", root -> op);
 		preorder_traversal(root -> right);
 	}
 }
@@ -197,33 +216,103 @@ void traversal_node(Node *root, int mode){
 	printf("\n");
 }
 
-void check_formula(string s){
-	
+bool check_formula(string s){
+	char pre = 0;
+	string sta;
+	bool is_illegal = true;
+
+	for(int64_t i = 0; i < s.length(); i++){
+		if(s[i] == '(') sta.push_back('(');
+		if(s[i] == ')'){
+			if(sta[sta.length() - 1] == '(') sta.pop_back();
+			else sta.push_back(')');
+		}
+
+		if(pre == '(' && s[i] == ')'){
+			is_illegal = false;
+			printf("Left parenthesis followed by a right parenthesis\n");
+		}
+		else if(pre == ')' && s[i] == '('){
+			is_illegal = false;
+			printf("Right parenthesis followed by a left parenthesis\n");
+		}
+		else if(!is_operator(s[i]) && !is_number(s[i]) && s[i] != '(' && s[i] != ')'){
+			is_illegal = false;
+			printf("Illegal character\n");
+		}
+		else if(pre == ')' && !is_operator(s[i]) && s[i] != ')'){
+			is_illegal = false;
+			printf("Right parenthesis followed by an identifier\n");
+		}
+		else if(pre == '(' && is_operator(s[i]) && s[i] != '-'){
+			is_illegal = false;
+			printf("Left parenthesis followed by an operator\n");
+		}
+		else if(is_operator(pre) && is_operator(s[i])){
+			is_illegal = false;
+			printf("Operator followed by an operator\n");
+		}
+		else if(is_number(pre) && s[i] == '('){
+			is_illegal = false;
+			printf("Identifier followed by a left parenthesis\n");
+		}
+		else if(is_operator(pre) && s[i] == ')'){
+			is_illegal = false;
+			printf("Operator followed by a right parenthesis\n");
+		}
+
+		pre = s[i];
+	}
+
+	if(!sta.empty()){
+		if(sta[sta.length() - 1] == '('){
+			is_illegal = false;
+			printf("Unmatched left parenthesis\n");
+		}
+		else{
+			is_illegal = false;
+			printf("Unmatched right parenthesis\n");
+		}
+	}
+
+	if(is_operator(s[0])){
+		is_illegal = false;
+		printf("First character an operator\n");
+	}
+	if(is_operator(s[s.length() - 1])){
+		is_illegal = false;
+		printf("Last character an operator\n");
+	}
+
+	return is_illegal;
 }
 
 int main(){
 	ios::sync_with_stdio(false);
 	cin.tie(0);
 
+	HANDLE h;
 	string formula;
-	while(true){
-		system("cls");
-		printf("Please input the formula.\n");
-		cin >> formula;
+	do{
+		h = GetStdHandle(STD_INPUT_HANDLE);
+		if(WaitForSingleObject(h, 0) == WAIT_OBJECT_0){
+			system("cls");
+			printf("Please input the formula.\n");
+			cin >> formula;
 
-		check_formula(formula);
+			if(check_formula(formula)){
+				Node *head = build_node(formula);
+				
+				printf("\n");
+				traversal_node(head, 2);
+				printf("\n");
+				
+				printf("= %.2lf\n\n", head -> value);
 
-		Node *head = build_node(formula);
-		
-		printf("\n");
-		traversal_node(head, 2);
-		printf("\n");
-		
-		printf("The answer is : %lf\n\n", head -> value);
-
-		delete_node(head);
-		system("pause");
-	}
+				delete_node(head);
+			}
+		}
+	}while(GetAsyncKeyState(VK_ESCAPE) == 0);
 
 	return 0;
 }
