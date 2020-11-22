@@ -219,7 +219,6 @@ void traversal_node(Node *root, int mode){
 bool check_formula(string s){
 	char pre = 0;
 	string sta;
-	bool is_illegal = true;
 
 	for(int64_t i = 0; i < s.length(); i++){
 		if(s[i] == '(') sta.push_back('(');
@@ -229,36 +228,36 @@ bool check_formula(string s){
 		}
 
 		if(pre == '(' && s[i] == ')'){
-			is_illegal = false;
 			printf("Left parenthesis followed by a right parenthesis\n");
+			return false;
 		}
 		else if(pre == ')' && s[i] == '('){
-			is_illegal = false;
 			printf("Right parenthesis followed by a left parenthesis\n");
+			return false;
 		}
 		else if(!is_operator(s[i]) && !is_number(s[i]) && s[i] != '(' && s[i] != ')'){
-			is_illegal = false;
 			printf("Illegal character\n");
+			return false;
 		}
 		else if(pre == ')' && !is_operator(s[i]) && s[i] != ')'){
-			is_illegal = false;
 			printf("Right parenthesis followed by an identifier\n");
+			return false;
 		}
 		else if(pre == '(' && is_operator(s[i]) && s[i] != '-'){
-			is_illegal = false;
 			printf("Left parenthesis followed by an operator\n");
+			return false;
 		}
 		else if(is_operator(pre) && is_operator(s[i])){
-			is_illegal = false;
 			printf("Operator followed by an operator\n");
+			return false;
 		}
 		else if(is_number(pre) && s[i] == '('){
-			is_illegal = false;
 			printf("Identifier followed by a left parenthesis\n");
+			return false;
 		}
 		else if(is_operator(pre) && s[i] == ')'){
-			is_illegal = false;
 			printf("Operator followed by a right parenthesis\n");
+			return false;
 		}
 
 		pre = s[i];
@@ -266,25 +265,25 @@ bool check_formula(string s){
 
 	if(!sta.empty()){
 		if(sta[sta.length() - 1] == '('){
-			is_illegal = false;
 			printf("Unmatched left parenthesis\n");
+			return false;
 		}
 		else{
-			is_illegal = false;
 			printf("Unmatched right parenthesis\n");
+			return false;
 		}
 	}
 
 	if(is_operator(s[0])){
-		is_illegal = false;
 		printf("First character an operator\n");
+		return false;
 	}
 	if(is_operator(s[s.length() - 1])){
-		is_illegal = false;
 		printf("Last character an operator\n");
+		return false;
 	}
 
-	return is_illegal;
+	return true;
 }
 
 int main(){
