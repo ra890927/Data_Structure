@@ -219,6 +219,16 @@ void traversal_node(Node *root, int mode){
 bool check_formula(string s){
 	char pre = 0;
 	string sta;
+	bool is_illegal = true;
+
+	if(is_operator(s[0])){
+		printf("First character an operator\n");
+		is_illegal = false;
+	}
+	if(is_operator(s[s.length() - 1])){
+		printf("Last character an operator\n");
+		is_illegal = false;
+	}
 
 	for(int64_t i = 0; i < s.length(); i++){
 		if(s[i] == '(') sta.push_back('(');
@@ -229,35 +239,35 @@ bool check_formula(string s){
 
 		if(pre == '(' && s[i] == ')'){
 			printf("Left parenthesis followed by a right parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(pre == ')' && s[i] == '('){
 			printf("Right parenthesis followed by a left parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(!is_operator(s[i]) && !is_number(s[i]) && s[i] != '(' && s[i] != ')'){
 			printf("Illegal character\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(pre == ')' && !is_operator(s[i]) && s[i] != ')'){
 			printf("Right parenthesis followed by an identifier\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(pre == '(' && is_operator(s[i]) && s[i] != '-'){
 			printf("Left parenthesis followed by an operator\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(is_operator(pre) && is_operator(s[i])){
 			printf("Operator followed by an operator\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(is_number(pre) && s[i] == '('){
 			printf("Identifier followed by a left parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 		else if(is_operator(pre) && s[i] == ')'){
 			printf("Operator followed by a right parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 
 		pre = s[i];
@@ -266,24 +276,15 @@ bool check_formula(string s){
 	if(!sta.empty()){
 		if(sta[sta.length() - 1] == '('){
 			printf("Unmatched left parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 		else{
 			printf("Unmatched right parenthesis\n");
-			return false;
+			is_illegal = false;
 		}
 	}
 
-	if(is_operator(s[0])){
-		printf("First character an operator\n");
-		return false;
-	}
-	if(is_operator(s[s.length() - 1])){
-		printf("Last character an operator\n");
-		return false;
-	}
-
-	return true;
+	return is_illegal;
 }
 
 int main(){
