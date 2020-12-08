@@ -80,36 +80,28 @@ Node *build_leaf(string s, bool is_signed){
 Node *build_node(string s){
 	Node *temp = new Node;
 
-	int sub_i = -1;		//record the last -'s index
-	int sub_cnt = 0;	//record how many -
-
-	//jump over index 0
-	//judge whether separate strirng into two substring or not
-	bool check = true;
-	for(int64_t i = 1; i < s.length(); i++){
-		if(is_operator(s[i])){
-			check = false;
-			if(s[i] == '-'){
-				sub_cnt += 1;
-				sub_i = i;
+	while(s[0] == '(' && s[s.length() - 1] == ')'){
+		stack<char> sta;
+		for(int64_t i = 0; i < s.length() - 1; i++){
+			if(s[i] == '(') sta.push(')');
+			else if(s[i] == ')'){
+				if(sta.top() == '(') sta.pop();
+				else sta.push(')');
 			}
 		}
+
+		if(sta.empty()) s.assign(s, 1, s.length() - 2);
+		else break;
 	}
-	//if noly one and the index of - is 1 ex. (-10)
-	if(sub_cnt == 1 && sub_i == 1) check = true;
+
+	bool check = true;
+	for(int64_t i = 1; i < s.length(); i++)
+		if(is_operator(s[i])) check = false;
 
 	//if the string can't be separate
 	if(check){
 		if(s[0] == '-') return build_leaf(s, true);
 		else if(is_number(s[0])) return build_leaf(s, false);
-		else if(s[0] == '(' && s[s.length() - 1] == ')'){
-			s.assign(s, 1, s.length() - 2);
-
-			if(s[0] == '-') temp = build_leaf(s, true);
-			else if(is_number(s[1])) temp = build_leaf(s, false);
-
-			return temp;
-		}
 	}
 
 	char it = 0;	//record the separate operator
@@ -137,15 +129,10 @@ Node *build_node(string s){
 	if(is_operator(it)){
 		temp->op = s[index];
 
+		//a, b are the substring of s
 		string a, b;
 		a.assign(s, 0, index);
 		b.assign(s, index + 1, s.length());
-
-		//after separating, the substring might have parenteses
-		if(a[0] == '(' && a[a.length() - 1] == ')')
-			a.assign(a, 1, a.length() - 2);
-		if(b[0] == '(' && b[b.length() - 1] == ')')
-			b.assign(b, 1, b.length() - 2);
 
 		temp -> left = build_node(a);
 		temp -> right = build_node(b);
