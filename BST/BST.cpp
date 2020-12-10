@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <fstream>
 #include <stdlib.h>
+#include <conio.h>
 using namespace std;
 
 class BST;
@@ -17,6 +18,8 @@ public:
 	TreeNode(): leftchild(NULL), rightchild(NULL), parent(NULL), label(0), money(0), amount(0){};
 	TreeNode(int label, int money, int amount): leftchild(NULL), rightchild(NULL), parent(NULL), label(label), money(money), amount(amount){};	
 
+	void print(){ cout << label << " " << money << " " << amount << endl; }
+
 	friend class BST;
 };
 
@@ -31,10 +34,11 @@ public:
 	BST(): root(NULL){};
 
 	TreeNode* search(int label);
-	void insert(int label, int money, int amount);
+	void insert(TreeNode node);
 	void remove(int label);
 	void inorder_print();
-	void _inorder_print(TreeNode *current);
+	void inorder_print(TreeNode *current);
+	void levelorder_print();
 };
 
 TreeNode* BST::search(int label){
@@ -50,10 +54,10 @@ TreeNode* BST::search(int label){
 	return current;
 }
 
-void BST::insert(int label, int money, int amount){
+void BST::insert(TreeNode node){
 	TreeNode *cur = NULL;
 	TreeNode *pre = NULL;
-	TreeNode *insert_node = new TreeNode(label, money, amount);
+	TreeNode *insert_node = new TreeNode(node.label, node.money, node.amount);
 
 	cur = root;
 	while(cur != NULL){
@@ -74,22 +78,18 @@ void BST::insert(int label, int money, int amount){
 		pre -> rightchild = insert_node;
 }
 
-TreeNode* BST::left_most(TreeNode *node){
-	TreeNode *cur = root;
+TreeNode* BST::left_most(TreeNode *current){
+	while(current -> leftchild != NULL)
+		current = current -> leftchild;
 
-	while(cur -> leftchild != NULL)
-		cur = cur -> leftchild;
-
-	return cur;
+	return current;
 }
 
-TreeNode* BST::right_most(TreeNode *node){
-	TreeNode *cur = root;
+TreeNode* BST::right_most(TreeNode *current){
+	while(current -> rightchild != NULL)
+		current = current -> rightchild;
 
-	while(cur -> rightchild != NULL)
-		cur = cur -> rightchild;
-
-	return cur;
+	return current;
 }
 
 void BST::remove(int label){
@@ -108,35 +108,54 @@ void BST::remove(int label){
 	delete del;
 }
 
-TreeNode* BST::successor(TreeNode *node){
-	if(node -> rightchild != NULL)
-		return left_most(node -> rightchild);
+TreeNode* BST::successor(TreeNode *current){
+	if(current -> rightchild)
+		return left_most(current -> rightchild);
 
-	TreeNode *new_node = node -> parent;
-	//cout << "test" << new_node -> label << " " << new_node -> money << " " << new_node -> amount << endl;
-	while(new_node != NULL && node == new_node -> rightchild){
-		node = new_node;
-		new_node = new_node -> parent;
+	TreeNode *successor = current -> parent;
+	while(successor != NULL && current == successor -> rightchild){
+		current = successor;
+		successor = successor -> parent;
 	}
 
-	return new_node;
+	return successor;
 }
 
 void BST::inorder_print(){
-	//_inorder_print(root);
-	TreeNode *cur = new TreeNode;
-	cur = left_most(root);
-	while(cur){
-		cout << cur -> label << " " << cur -> money << " " << cur -> amount << endl;
-		cur = successor(cur);
+	TreeNode *current = new TreeNode;
+	current = left_most(root);
+
+	while(current != NULL){
+		(*current).print();
+		current = successor(current);
 	}
 }
 
-void BST::_inorder_print(TreeNode *current){
-	if(current){
-		_inorder_print(current -> leftchild);
-		cout << current -> label << " " << current -> money << " " << current -> amount << endl;
-		_inorder_print(current -> rightchild);
+void BST::inorder_print(TreeNode *current){
+	char ch = 0;
+	current = successor(current);
+	while(current != NULL){
+		(*current).print();
+		current = successor(current);
+
+		if(_kbhit()){
+			ch = _getch();
+			if(ch == 114) break;
+		}
+	}
+}
+
+void BST::levelorder_print(){
+	queue<TreeNode> que;
+
+	que.push(*root);
+	while(!que.empty()){
+		TreeNode node = que.front();
+		que.pop();
+
+		node.print();
+		if(node.leftchild) que.push(*node.leftchild);
+		if(node.rightchild) que.push(*node.rightchild);
 	}
 }
 
@@ -145,9 +164,9 @@ int main(){
 	fstream pfile;
 	string file_name;
 	
-	cout << "Please input the file name." << endl;
-	cin >> file_name;
-	pfile.open(file_name, ios::in);
+	//cout << "Please input the file name." << endl;
+	//cin >> file_name;
+	pfile.open("product.txt", ios::in);
 
 	if(pfile.fail()){
 		cout << "The file is not exist." << endl;
@@ -156,12 +175,61 @@ int main(){
 	else{
 		int label, money, amount;
 		while(pfile >> label >> money >> amount)
-			T.insert(label, money, amount);
+			T.insert(TreeNode(label, money, amount));
 
+		pfile.close();
+		cout << "File process done." << endl;
+		system("pause");
 		T.inorder_print();
 	}
 
-	pfile.close();
+	int option;
+	while(true){
+		char ch = 0;
+		int label, money, amount;
+		TreeNode *node = new TreeNode;
+
+		system("cls");
+		cout << "Please input the option." << endl;
+		cin >> option;
+		switch(option){
+			case 1:
+				cin >> label;
+				node = T.search(label);
+				
+				if(node){
+					node->print();
+					cout << endl;
+
+					while(true){
+						if(_kbhit()){
+							ch = _getch();
+							if(ch == 110) T.inorder_print(node);
+							break;
+						}
+					}
+				}
+				else cout << "The label " << label << "does not exist." << endl;
+
+				system("pause");
+				break;
+			case 2:
+				cin >> label >> money >> amount;
+				node = T.search(label);
+
+				if(node != NULL){
+					node -> amount += 1;
+					cout << "The product has been inport." << endl;
+				}
+				else{
+					T.insert(TreeNode(label, money, amount));
+					cout << "The product has been add in the database." << endl;
+				}
+
+				system("pause");
+				break;
+		}
+	}
 
 	return 0;
 }
