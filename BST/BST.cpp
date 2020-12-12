@@ -34,11 +34,13 @@ public:
 	BST(): root(NULL){};
 
 	TreeNode* search(int label);
+	int price_search();
 	void insert(TreeNode node);
 	void remove(int label);
 	void inorder_print();
 	void inorder_print(TreeNode *current);
 	void levelorder_print();
+	void data_export();
 };
 
 TreeNode* BST::search(int label){
@@ -52,6 +54,24 @@ TreeNode* BST::search(int label){
 	}
 
 	return current;
+}
+
+int BST::price_search(){
+	int label, price = 0;
+	queue<TreeNode> que;
+
+	que.push(*root);
+	while(!que.empty()){
+		TreeNode current = que.front();
+		que.pop();
+
+		if(current.money > price) label = current.label;
+
+		if(current.leftchild) que.push(*current.leftchild);
+		if(current.rightchild) que.push(*current.rightchild);
+	}
+
+	return label;
 }
 
 void BST::insert(TreeNode node){
@@ -95,6 +115,8 @@ TreeNode* BST::right_most(TreeNode *current){
 void BST::remove(int label){
 	TreeNode *del = search(label);
 	TreeNode *child = new TreeNode;
+
+	if(del == NULL) return;
 
 	if(del -> leftchild)
 		child = right_most(del -> leftchild);
@@ -173,7 +195,7 @@ int main(){
 		return 0;
 	}
 	else{
-		int label, money, amount;
+		int label, money, amount, index;
 		while(pfile >> label >> money >> amount)
 			T.insert(TreeNode(label, money, amount));
 
@@ -228,6 +250,59 @@ int main(){
 
 				system("pause");
 				break;
+			case 3:
+				cin >> label;
+				node = T.search(label);
+
+				if(node != NULL){
+					T.remove(label);
+					cout << "The product has been removed." << endl;
+				}
+				else cout << "The product does not exist" << endl;
+
+				system("pause");
+				break;
+			case 4:
+				cin >> label >> amount;
+				node = T.search(label);
+
+				if(node != NULL){
+					if(node -> amount > 0){
+						node -> amount -= 1;
+						cout << "The product has been export." << endl;
+					}
+					else cout << "The product's amount is not enough." << endl;
+				}
+				else cout << "The product does not exit." << endl;
+
+				system("pause");
+				break;
+			case 5:
+				T.inorder_print();
+				system("pause");
+				break;
+			case 6:
+				cin >> label >> index;
+				node = T.search(label);
+
+				if(node != NULL){
+					T.insert(index, node -> money, node -> amount);
+					T.remove(label);
+					cout << "The product's label" << label << "has been edit as " << index << "." << endl;
+				}
+				else cout << "The product does not exist." << endl;
+
+				system("pause");
+				break;
+			case 7:
+				cout << "The most expensive product's label is " << T.price_search() << endl;
+				system("pause");
+				break;
+			case 8:
+				cin >> file_name;
+				pfile.open(file_name, ios::out);
+
+				if(pfile.fail()) cout << "The file open error." << endl;
 		}
 	}
 
