@@ -4,222 +4,65 @@
 #include <conio.h>
 using namespace std;
 
-class BST;
-class TreeNode{
-private:
-	TreeNode *leftchild;
-	TreeNode *rightchild;
-	TreeNode *parent;
-	int label;
-	int money;
-	int amount;
+#include "BST.h"
 
-public:
-	TreeNode(): leftchild(NULL), rightchild(NULL), parent(NULL), label(0), money(0), amount(0){};
-	TreeNode(int label, int money, int amount): leftchild(NULL), rightchild(NULL), parent(NULL), label(label), money(money), amount(amount){};	
-
-	void print(){ cout << label << " " << money << " " << amount << endl; }
-
-	friend class BST;
-};
-
-class BST{
-private:
-	TreeNode *root;
-	TreeNode* left_most(TreeNode *node);
-	TreeNode* right_most(TreeNode *node);
-	TreeNode* successor(TreeNode* node);
-
-public:
-	BST(): root(NULL){};
-
-	TreeNode* search(int label);
-	int price_search();
-	void insert(TreeNode node);
-	void remove(int label);
-	void inorder_print();
-	void inorder_print(TreeNode *current);
-	void levelorder_print();
-	void data_export();
-};
-
-TreeNode* BST::search(int label){
-	TreeNode *current = root;
-
-	while(current != NULL && current -> label != label){
-		if(current -> label > label)
-			current = current -> leftchild;
-		else
-			current = current -> rightchild;
-	}
-
-	return current;
-}
-
-int BST::price_search(){
-	int label, price = 0;
-	queue<TreeNode> que;
-
-	que.push(*root);
-	while(!que.empty()){
-		TreeNode current = que.front();
-		que.pop();
-
-		if(current.money > price) label = current.label;
-
-		if(current.leftchild) que.push(*current.leftchild);
-		if(current.rightchild) que.push(*current.rightchild);
-	}
-
-	return label;
-}
-
-void BST::insert(TreeNode node){
-	TreeNode *cur = NULL;
-	TreeNode *pre = NULL;
-	TreeNode *insert_node = new TreeNode(node.label, node.money, node.amount);
-
-	cur = root;
-	while(cur != NULL){
-		pre = cur;
-		if(insert_node -> label < cur -> label)
-			cur = cur -> leftchild;
-		else
-			cur = cur -> rightchild;
-	}
-
-	insert_node -> parent = pre;
-
-	if(pre == NULL)
-		this -> root = insert_node;
-	else if(insert_node -> label < pre -> label)
-		pre -> leftchild = insert_node;
-	else
-		pre -> rightchild = insert_node;
-}
-
-TreeNode* BST::left_most(TreeNode *current){
-	while(current -> leftchild != NULL)
-		current = current -> leftchild;
-
-	return current;
-}
-
-TreeNode* BST::right_most(TreeNode *current){
-	while(current -> rightchild != NULL)
-		current = current -> rightchild;
-
-	return current;
-}
-
-void BST::remove(int label){
-	TreeNode *del = search(label);
-	TreeNode *child = new TreeNode;
-
-	if(del == NULL) return;
-
-	if(del -> leftchild)
-		child = right_most(del -> leftchild);
-	else
-		child = left_most(del -> rightchild);
-
-	child -> parent = del -> parent;
-	child -> leftchild = del -> leftchild;
-	child -> rightchild = del -> rightchild;
-
-	delete del;
-}
-
-TreeNode* BST::successor(TreeNode *current){
-	if(current -> rightchild)
-		return left_most(current -> rightchild);
-
-	TreeNode *successor = current -> parent;
-	while(successor != NULL && current == successor -> rightchild){
-		current = successor;
-		successor = successor -> parent;
-	}
-
-	return successor;
-}
-
-void BST::inorder_print(){
-	TreeNode *current = new TreeNode;
-	current = left_most(root);
-
-	while(current != NULL){
-		(*current).print();
-		current = successor(current);
-	}
-}
-
-void BST::inorder_print(TreeNode *current){
-	char ch = 0;
-	current = successor(current);
-	while(current != NULL){
-		(*current).print();
-		current = successor(current);
-
-		if(_kbhit()){
-			ch = _getch();
-			if(ch == 114) break;
-		}
-	}
-}
-
-void BST::levelorder_print(){
-	queue<TreeNode> que;
-
-	que.push(*root);
-	while(!que.empty()){
-		TreeNode node = que.front();
-		que.pop();
-
-		node.print();
-		if(node.leftchild) que.push(*node.leftchild);
-		if(node.rightchild) que.push(*node.rightchild);
-	}
+void menu(){
+	system("cls");
+	cout << "_________________________________________________________" << endl;
+	cout << "| (1): Search the product and show it's information.    |" << endl;
+	cout << "|      Press 'N' can show other products' information.  |" << endl;
+	cout << "|      Press 'R' can stop showing products' information.|" << endl;
+	cout << "| (2): Import products.                                 |" << endl;
+	cout << "|      If the product does not exist, add in the data.  |" << endl;
+	cout << "| (3): Delete a product.                                |" << endl;
+	cout << "| (4): Export products.                                 |" << endl;
+	cout << "| (5): List all product information.                    |" << endl;
+	cout << "| (6): Modify the product number.                       |" << endl;
+	cout << "| (7): Search for a product with highest price.         |" << endl;
+	cout << "| (8): Store product information in file.               |" << endl;
+	cout << "| (9): Exit.                                            |" << endl;
+	cout << "_________________________________________________________" << endl;
+	cout << endl << "Please input the option." << endl;
 }
 
 int main(){
 	BST T;
-	fstream pfile;
 	string file_name;
-	
-	//cout << "Please input the file name." << endl;
-	//cin >> file_name;
-	pfile.open("product.txt", ios::in);
+
+	cout << "Please input the file name." << endl;
+	cin >> file_name;
+	ifstream pfile(file_name);
 
 	if(pfile.fail()){
 		cout << "The file is not exist." << endl;
 		return 0;
 	}
 	else{
-		int label, money, amount, index;
+		int label, money, amount;
 		while(pfile >> label >> money >> amount)
 			T.insert(TreeNode(label, money, amount));
 
 		pfile.close();
 		cout << "File process done." << endl;
 		system("pause");
-		T.inorder_print();
 	}
 
 	int option;
 	while(true){
 		char ch = 0;
-		int label, money, amount;
+		int label, amount, index;
 		TreeNode *node = new TreeNode;
 
-		system("cls");
-		cout << "Please input the option." << endl;
+		menu();
 		cin >> option;
 		switch(option){
 			case 1:
+				cout << "Please input the product number." << endl;
 				cin >> label;
 				node = T.search(label);
 				
 				if(node){
+					cout << "The number " << label << " product information: ";
 					node->print();
 					cout << endl;
 
@@ -231,29 +74,22 @@ int main(){
 						}
 					}
 				}
-				else cout << "The label " << label << "does not exist." << endl;
+				else cout << "The number " << label << " product does not exist." << endl;
 
 				system("pause");
 				break;
 			case 2:
-				cin >> label >> money >> amount;
-				node = T.search(label);
+				cout << "Please input the product number and amount." << endl;
+				cin >> label >> amount;
 
-				if(node != NULL){
-					node -> amount += 1;
-					cout << "The product has been inport." << endl;
-				}
-				else{
-					T.insert(TreeNode(label, money, amount));
-					cout << "The product has been add in the database." << endl;
-				}
-
+				T.inport(label, amount);
 				system("pause");
 				break;
 			case 3:
+				cout << "Please input the product number." << endl;
 				cin >> label;
+				
 				node = T.search(label);
-
 				if(node != NULL){
 					T.remove(label);
 					cout << "The product has been removed." << endl;
@@ -263,46 +99,46 @@ int main(){
 				system("pause");
 				break;
 			case 4:
+				cout << "Please input the product number and amount." << endl;
 				cin >> label >> amount;
-				node = T.search(label);
-
-				if(node != NULL){
-					if(node -> amount > 0){
-						node -> amount -= 1;
-						cout << "The product has been export." << endl;
-					}
-					else cout << "The product's amount is not enough." << endl;
-				}
-				else cout << "The product does not exit." << endl;
-
+				
+				T.outport(label, amount);
 				system("pause");
 				break;
 			case 5:
+				cout << endl << "All product information:" << endl;
 				T.inorder_print();
 				system("pause");
 				break;
 			case 6:
+				cout << "Please input the product original number and modified number." << endl;
 				cin >> label >> index;
-				node = T.search(label);
-
-				if(node != NULL){
-					T.insert(index, node -> money, node -> amount);
-					T.remove(label);
-					cout << "The product's label" << label << "has been edit as " << index << "." << endl;
-				}
-				else cout << "The product does not exist." << endl;
-
+				
+				T.modify(label, index);
 				system("pause");
 				break;
 			case 7:
-				cout << "The most expensive product's label is " << T.price_search() << endl;
+				cout << "The most expensive product's number is " << T.price_search() << "." << endl;
 				system("pause");
 				break;
 			case 8:
+				cout << "Please input the file name." << endl;
 				cin >> file_name;
-				pfile.open(file_name, ios::out);
 
-				if(pfile.fail()) cout << "The file open error." << endl;
+				T.data_export(file_name);
+				system("pause");
+				break;
+			case 9:
+				T.clear();
+				return 0;
+			case 10:
+				T.levelorder_print();
+				system("pause");
+				break;
+			default:
+				cout << "Error option. Please input option again." << endl;
+				system("pause");
+				break;
 		}
 	}
 
