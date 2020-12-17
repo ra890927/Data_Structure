@@ -155,20 +155,20 @@ void posorder_traversal(Node *root){
 		posorder_traversal(root -> left);
 		posorder_traversal(root -> right);
 		if(!root -> op){
-			if(root -> value < 0) printf("(%.0lf)", root -> value);
-			else printf("%.0lf", root -> value);
+			if(root -> value < 0) printf("(%.0lf) ", root -> value);
+			else printf("%.0lf ", root -> value);
 		}
-		else printf("%c", root -> op);
+		else printf("%c ", root -> op);
 	}
 }
 
 void preorder_traversal(Node *root){
 	if(root){
 		if(!root -> op){
-			if(root -> value < 0) printf("(%.0lf)", root -> value);
-			else printf("%.0lf", root -> value);
+			if(root -> value < 0) printf("(%.0lf) ", root -> value);
+			else printf("%.0lf ", root -> value);
 		}
-		else printf("%c", root -> op);
+		else printf("%c ", root -> op);
 		preorder_traversal(root -> left);
 		preorder_traversal(root -> right);
 	}
@@ -178,10 +178,10 @@ void inorder_traversal(Node *root){
 	if(root){
 		preorder_traversal(root -> left);
 		if(!root -> op){
-			if(root -> value < 0) printf("(%.0lf)", root -> value);
-			else printf("%.0lf", root -> value);
+			if(root -> value < 0) printf("(%.0lf) ", root -> value);
+			else printf("%.0lf ", root -> value);
 		}
-		else printf("%c", root -> op);
+		else printf("%c ", root -> op);
 		preorder_traversal(root -> right);
 	}
 }
