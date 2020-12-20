@@ -8,7 +8,7 @@ using namespace std;
 
 void menu(){
 	system("cls");
-	cout << "_________________________________________________________" << endl;
+	cout << "=========================================================" << endl;
 	cout << "| (1): Search the product and show it's information.    |" << endl;
 	cout << "|      Press 'N' can show other products' information.  |" << endl;
 	cout << "|      Press 'R' can stop showing products' information.|" << endl;
@@ -19,19 +19,19 @@ void menu(){
 	cout << "| (5): List all product information.                    |" << endl;
 	cout << "| (6): Modify the product number.                       |" << endl;
 	cout << "| (7): Search for a product with highest price.         |" << endl;
-	cout << "| (8): Store product information in file.               |" << endl;
+	cout << "| (8): Save information in another file and exit.       |" << endl;
 	cout << "| (9): Exit.                                            |" << endl;
-	cout << "_________________________________________________________" << endl;
+	cout << "=========================================================" << endl;
 	cout << endl << "Please input the option." << endl;
 }
 
 int main(){
 	BST T;
-	string file_name;
+	string file_name, name;
 
-	cout << "Please input the file name." << endl;
-	cin >> file_name;
-	ifstream pfile(file_name);
+	/*cout << "Please input the file name." << endl;
+	cin >> file_name;*/
+	ifstream pfile("product.txt");
 
 	if(pfile.fail()){
 		cout << "The file is not exist." << endl;
@@ -57,35 +57,50 @@ int main(){
 		cin >> option;
 		switch(option){
 			case 1:
+				system("cls");
+				cout << "====== Option 1: search product ======" << endl << endl;
 				cout << "Please input the product number." << endl;
 				cin >> label;
 				node = T.search(label);
 				
 				if(node){
-					cout << "The number " << label << " product information: ";
+					//cout << "The number " << label << " product information: ";
 					node->print();
-					cout << endl;
 
-					while(true){
+					while(T.successor(node)){
 						if(_kbhit()){
 							ch = _getch();
-							if(ch == 110) T.inorder_print(node);
-							break;
+							if(ch == 110){
+								cout << "Next product:" << endl;
+								node = T.successor(node);
+								node -> print();
+
+								if(T.successor(node) == NULL){
+									cout << "This is the last product." << endl;
+									break;
+								}
+							}
+							else if(ch == 114) break;
 						}
 					}
 				}
 				else cout << "The number " << label << " product does not exist." << endl;
 
+				cout << endl << "============ Option 1 end ============" << endl;
 				system("pause");
 				break;
 			case 2:
+				system("cls");
+				cout << "====== Option 2: inport product ======" << endl << endl;
 				cout << "Please input the product number and amount." << endl;
 				cin >> label >> amount;
-
 				T.inport(label, amount);
+				cout << endl << "============ Option 2 end ============" << endl;
 				system("pause");
 				break;
 			case 3:
+				system("cls");
+				cout << "====== Option 3: delete product ======" << endl << endl;
 				cout << "Please input the product number." << endl;
 				cin >> label;
 				
@@ -96,45 +111,55 @@ int main(){
 				}
 				else cout << "The product does not exist" << endl;
 
+				cout << endl << "============ Option 3 end ============" << endl;
 				system("pause");
 				break;
 			case 4:
+				system("cls");
+				cout << "====== Option 4: export product ======" << endl << endl;
 				cout << "Please input the product number and amount." << endl;
 				cin >> label >> amount;
-				
 				T.outport(label, amount);
+				cout << endl << "============ Option 4 end ============" << endl;
 				system("pause");
 				break;
 			case 5:
+				system("cls");
+				cout << "====== Option 5: print product  ======" << endl << endl;
 				cout << endl << "All product information:" << endl;
 				T.inorder_print();
+				cout << endl << "============ Option 5 end ============" << endl;
 				system("pause");
 				break;
 			case 6:
+				system("cls");
+				cout << "====== Option 6: modify product ======" << endl << endl;
 				cout << "Please input the product original number and modified number." << endl;
 				cin >> label >> index;
-				
 				T.modify(label, index);
+				cout << endl << "============ Option 6 end ============" << endl;
 				system("pause");
 				break;
 			case 7:
+				system("cls");
+				cout << "====== Option 7: search expensive product ======" << endl << endl;
 				cout << "The most expensive product's number is " << T.price_search() << "." << endl;
+				cout << endl << "================= Option 7 end =================" << endl;
 				system("pause");
 				break;
 			case 8:
+				system("cls");
+				cout << "====== Option 8: save in file ======" << endl << endl;
 				cout << "Please input the file name." << endl;
-				cin >> file_name;
-
-				T.data_export(file_name);
-				system("pause");
-				break;
-			case 9:
-				T.clear();
+				cin >> name;
+				T.data_export(name);
+				cout << endl << "=========== Program end  ===========" << endl;
 				return 0;
-			case 10:
-				T.levelorder_print();
-				system("pause");
-				break;
+			case 9:
+				system("cls");
+				T.data_export(file_name);
+				cout << "====== Program end ====== " << endl;
+				return 0;
 			default:
 				cout << "Error option. Please input option again." << endl;
 				system("pause");

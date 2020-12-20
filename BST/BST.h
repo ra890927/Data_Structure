@@ -16,7 +16,11 @@ public:
 	TreeNode(): leftchild(NULL), rightchild(NULL), parent(NULL), label(0), money(0), amount(0){};
 	TreeNode(int label, int money, int amount): leftchild(NULL), rightchild(NULL), parent(NULL), label(label), money(money), amount(amount){};	
 
-	void print(){ cout << label << " " << money << " " << amount << endl; }
+	void print(){
+		cout << "number is " << label << endl;
+		cout << "price is " << money << endl;
+		cout << "amount is " << amount << endl << endl;
+	}
 	void copy(TreeNode &other){
 		label = other.label;
 		money = other.money;
@@ -31,12 +35,12 @@ private:
 	TreeNode *root;
 	TreeNode* left_most(TreeNode *node);
 	TreeNode* right_most(TreeNode *node);
-	TreeNode* successor(TreeNode *node);
 	void _clear(TreeNode *node);
 
 public:
 	BST(): root(NULL){};
 
+	TreeNode* successor(TreeNode *node);
 	TreeNode* search(int label);
 	int price_search();
 	void insert(TreeNode node);
@@ -128,6 +132,7 @@ void BST::insert(TreeNode node){
 void BST::inport(int label, int amount){
 	TreeNode *node = search(label);
 
+	cout << endl;
 	if(node != NULL){
 		node -> amount += amount;
 		cout << "The product has been inported." << endl;
@@ -135,6 +140,7 @@ void BST::inport(int label, int amount){
 	}
 	else{
 		int money;
+		cout << "The product does not exist." << endl;
 		cout << "Please input the product's price." << endl;
 		cin >> money;
 		insert(TreeNode(label, money, amount));
@@ -145,6 +151,7 @@ void BST::inport(int label, int amount){
 void BST::outport(int label, int amount){
 	TreeNode *node = search(label);
 
+	cout << endl;
 	if(node != NULL){
 		if(node -> amount >= amount){
 			node -> amount -= amount;
@@ -157,8 +164,15 @@ void BST::outport(int label, int amount){
 }
 
 void BST::modify(int original, int modified){
-	TreeNode *node = search(original);
+	TreeNode *node = search(modified);
 
+	cout << endl;
+	if(node != NULL){
+		cout << "The product " << modified << " has existed." << endl;
+		return;
+	}
+
+	node = search(original);
 	if(node != NULL){
 		insert(TreeNode(modified, node -> money, node -> amount));
 		remove(original);
