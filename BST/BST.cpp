@@ -29,9 +29,9 @@ int main(){
 	BST T;
 	string file_name, name;
 
-	/*cout << "Please input the file name." << endl;
-	cin >> file_name;*/
-	ifstream pfile("product.txt");
+	cout << "Please input the file name." << endl;
+	cin >> file_name;
+	ifstream pfile(file_name);
 
 	if(pfile.fail()){
 		cout << "The file is not exist." << endl;
@@ -143,7 +143,8 @@ int main(){
 			case 7:
 				system("cls");
 				cout << "====== Option 7: search expensive product ======" << endl << endl;
-				cout << "The most expensive product's number is " << T.price_search() << "." << endl;
+				if(T.empty()) cout << "The database is empty." << endl;
+				else cout << "The most expensive product's number is " << T.price_search() << "." << endl;
 				cout << endl << "================= Option 7 end =================" << endl;
 				system("pause");
 				break;
@@ -158,7 +159,7 @@ int main(){
 			case 9:
 				system("cls");
 				T.data_export(file_name);
-				cout << "====== Program end ====== " << endl;
+				cout << endl << "====== Program end ====== " << endl;
 				return 0;
 			default:
 				cout << "Error option. Please input option again." << endl;

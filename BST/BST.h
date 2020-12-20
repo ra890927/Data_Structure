@@ -49,7 +49,6 @@ public:
 	void outport(int label, int amount);
 	void modify(int original, int modified);
 	void inorder_print();
-	void inorder_print(TreeNode *current);
 	void levelorder_print();
 	void data_export(string file_name);
 	void clear();
@@ -215,14 +214,13 @@ void BST::remove(int label){
 	if(child != NULL) child -> parent = parent -> parent;
 
 	if(parent -> parent == NULL)
-		this -> root = parent;
+		this -> root = child;
 	else if(parent == parent -> parent -> leftchild)
 		parent -> parent -> leftchild = child;
 	else
 		parent -> parent -> rightchild = child;
 
 	if(parent != del) del -> copy(*parent);
-	if(parent == root) root = NULL;
 
 	delete parent;
 }
@@ -244,7 +242,7 @@ TreeNode* BST::successor(TreeNode *current){
 
 void BST::inorder_print(){
 	if(root == NULL){
-		cout << "BST is empty." << endl;
+		cout << "The database is empty." << endl;
 		return;
 	}
 
@@ -254,20 +252,6 @@ void BST::inorder_print(){
 	while(current != NULL){
 		(*current).print();
 		current = successor(current);
-	}
-}
-
-void BST::inorder_print(TreeNode *current){
-	char ch = 0;
-	current = successor(current);
-	while(current != NULL){
-		(*current).print();
-		current = successor(current);
-
-		if(_kbhit()){
-			ch = _getch();
-			if(ch == 114) break;
-		}
 	}
 }
 
@@ -286,6 +270,11 @@ void BST::levelorder_print(){
 }
 
 void BST::data_export(string file_name){
+	if(empty()){
+		cout << "The database is empty." << endl;
+		return;
+	}
+
 	ofstream pfile(file_name, ios::trunc);
 
 	if(pfile.fail()){
