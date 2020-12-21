@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <conio.h>
+#include <unistd.h>
 using namespace std;
 
 #include "BST.h"
@@ -29,22 +30,30 @@ int main(){
 	BST T;
 	string file_name, name;
 
-	cout << "Please input the file name." << endl;
-	cin >> file_name;
-	ifstream pfile(file_name);
+	while(true){
+		system("cls");
+		cout << "Please input the file name." << endl;
+		cin >> file_name;
+		ifstream pfile(file_name);
 
-	if(pfile.fail()){
-		cout << "The file is not exist." << endl;
-		return 0;
-	}
-	else{
-		int label, money, amount;
-		while(pfile >> label >> money >> amount)
-			T.insert(TreeNode(label, money, amount));
+		if(pfile.fail()){
+			system("cls");
+			cout << "====== The file open error. ======" << endl;
+			sleep(1.5);
+			continue;
+		}
+		else{
+			system("cls");
+			cout << "The file open success." << endl;
+			int label, money, amount;
+			while(pfile >> label >> money >> amount)
+				T.insert(TreeNode(label, money, amount));
 
-		pfile.close();
-		cout << "File process done." << endl;
-		system("pause");
+			pfile.close();
+			cout << endl << "====== File process done. ======" << endl;
+			sleep(1.5);
+			break;
+		}
 	}
 
 	int option;
