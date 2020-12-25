@@ -42,7 +42,7 @@ public:
 
 	TreeNode* successor(TreeNode *node);
 	TreeNode* search(int label);
-	int price_search();
+	void price_search();
 	void insert(TreeNode node);
 	void remove(int label);
 	void inport(int label, int amount);
@@ -78,8 +78,8 @@ TreeNode* BST::search(int label){
 	return current;
 }
 
-int BST::price_search(){
-	int label, price = 0;
+void BST::price_search(){
+	int price = 0;
 	queue<TreeNode> que;
 
 	que.push(*root);
@@ -87,16 +87,19 @@ int BST::price_search(){
 		TreeNode current = que.front();
 		que.pop();
 
-		if(current.money > price){
-			label = current.label;
-			price = current.money;
-		}
+		price = max(price, current.money);
 
 		if(current.leftchild) que.push(*current.leftchild);
 		if(current.rightchild) que.push(*current.rightchild);
 	}
 
-	return label;
+	TreeNode *cur = left_most(root);
+
+	while(cur != NULL){
+		if(cur -> money == price)
+			cout << "The most expensive product's number is " << cur -> label << "." << endl;
+		cur = successor(cur);
+	}
 }
 
 void BST::insert(TreeNode node){

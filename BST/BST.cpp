@@ -153,7 +153,7 @@ int main(){
 				system("cls");
 				cout << "====== Option 7: search expensive product ======" << endl << endl;
 				if(T.empty()) cout << "The database is empty." << endl;
-				else cout << "The most expensive product's number is " << T.price_search() << "." << endl;
+				else T.price_search();
 				cout << endl << "================= Option 7 end =================" << endl;
 				system("pause");
 				break;
