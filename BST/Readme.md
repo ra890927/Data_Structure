@@ -1,9 +1,5 @@
 # Data_Structure Hw08 Readme
 
-# 作業程式碼
-- [**BST.cpp**](https://github.com/ra890927/Data_Structure/blob/master/BST/BST.cpp)
-- [**BST.h**](https://github.com/ra890927/Data_Structure/blob/master/BST/BST.h)
-
 ## class TreeNode
 ```cpp
 class TreeNode{
