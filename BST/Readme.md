@@ -1,7 +1,3 @@
----
-tags: 作業
----
-
 # Data_Structure Hw08 Readme
 
 # 作業程式碼
@@ -9,7 +5,7 @@ tags: 作業
 - [**BST.h**](https://github.com/ra890927/Data_Structure/blob/master/BST/BST.h)
 
 ## class TreeNode
-```cpp=
+```cpp
 class TreeNode{
 private:
     int label;
@@ -30,7 +26,7 @@ public:
 }
 ```
 
-```cpp=
+```cpp
 class BST{
 private:
     root;
@@ -63,7 +59,7 @@ public:
 ## Function
 
 ### empty()
-```cpp=
+```cpp
 bool BST::empty(){
     if(root == NULL) return true;
     return false;
@@ -71,7 +67,7 @@ bool BST::empty(){
 ```
 
 ### insert(TreeNode node)
-```cpp=
+```cpp
 void BST::insert(TreeNode node){
     TreeNode *cur = NULL;    //紀錄當前的節點
     TreeNode *pre = NULL;    //紀錄當前節點的父節點
@@ -104,7 +100,7 @@ void BST::insert(TreeNode node){
 ```
 
 ### left_most(TreeNode *current)
-```cpp=
+```cpp
 TreeNode* BST::left_most(TreeNode *current){
     while(current -> leftchild != NULL)
         current = current -> leftchild;
@@ -114,7 +110,7 @@ TreeNode* BST::left_most(TreeNode *current){
 ```
 
 ### successor(TreeNode *current)
-```cpp=
+```cpp
 TreeNode* BST::successor(TreeNode *current){
     if(current == NULL) return NULL;
 
@@ -132,7 +128,7 @@ TreeNode* BST::successor(TreeNode *current){
 ```
 
 ### remove(int label)
-```cpp=
+```cpp
 void BST::remove(int label){
     TreeNode *del = search(label);    //要修改的點
     TreeNode *parent = new TreeNode;  //要刪除的點
@@ -166,7 +162,7 @@ void BST::remove(int label){
 ```
 
 ### data_export(string file_name)
-```cpp=
+```cpp
 void BST::data_export(string file_name){
     if(empty()){
         cout << "The database is empty." << endl;
