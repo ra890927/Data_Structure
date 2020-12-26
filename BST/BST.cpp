@@ -21,7 +21,7 @@ void menu(){
 	cout << "| (6): Modify the product number.                       |" << endl;
 	cout << "| (7): Search for a product with highest price.         |" << endl;
 	cout << "| (8): Save information in another file and exit.       |" << endl;
-	cout << "| (9): Exit.                                            |" << endl;
+	cout << "| (9): Exit and Save.                                   |" << endl;
 	cout << "=========================================================" << endl;
 	cout << endl << "Please input the option." << endl;
 }
