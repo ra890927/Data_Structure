@@ -48,7 +48,6 @@ int main(){
 			int label, money, amount;
 			while(pfile >> label >> money >> amount)
 				T.insert(TreeNode(label, money, amount));
-
 			pfile.close();
 			cout << endl << "====== File process done. ======" << endl;
 			sleep(1.5);

@@ -116,11 +116,6 @@ void BST::insert(TreeNode node){
 			cur = cur -> rightchild;
 	}
 
-	if(cur != NULL){
-		cur -> amount += insert_node -> amount;
-		return;
-	}
-
 	insert_node -> parent = pre;
 
 	if(pre == NULL)
