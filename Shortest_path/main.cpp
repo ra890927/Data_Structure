@@ -38,8 +38,8 @@ int Dijkstra(int start, int end){
 		if(d[u] < p.k) continue;
 
 		for(Edge e : G[u]){
-			if(S[u] != e.state && d[e.to] > d[u] + 2 * e.cost){
-				d[e.to] = d[u] + 2 * e.cost;
+			if(S[u] != e.state && d[e.to] > d[u] + K * e.cost){
+				d[e.to] = d[u] + K * e.cost;
 				pri_q.push(Node(e.to, d[e.to]));
 			}
 			else if(d[e.to] > d[u] + e.cost){
@@ -48,9 +48,6 @@ int Dijkstra(int start, int end){
 			}
 		}
 	}
-
-	for(int i = 1; i <= V; i++)
-		cout << i << ": " << d[i] << endl;
 
 	return d[end];
 }
