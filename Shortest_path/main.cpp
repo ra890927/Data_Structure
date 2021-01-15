@@ -20,14 +20,24 @@ struct Node{
 
 int V, E, C, K, N;
 int S[MAX_N];
+int parent[MAX_N];
+vector<int> route;
 vector<Edge> G[MAX_N];
+
+void find_route(int child){
+	if(child == parent[child]) return;
+	find_route(parent[child]);
+	route.push_back(child);
+}
 
 int Dijkstra(int start, int end){
 	int d[MAX_N];
 	priority_queue<Node> pri_q;
 	fill(d, d + V + 1, INT_MAX);
+	memset(parent, 0, sizeof(parent));
 	
 	d[start] = 0;
+	parent[start] = start;
 	pri_q.push(Node(start, d[start]));
 
 	while(!pri_q.empty()){
@@ -38,16 +48,20 @@ int Dijkstra(int start, int end){
 		if(d[u] < p.k) continue;
 
 		for(Edge e : G[u]){
-			if(S[u] != e.state && d[e.to] > d[u] + K * e.cost){
+			if(S[start] != e.state && d[e.to] > d[u] + K * e.cost){
+				parent[e.to] = u;
 				d[e.to] = d[u] + K * e.cost;
 				pri_q.push(Node(e.to, d[e.to]));
 			}
-			else if(S[u] == e.state && d[e.to] > d[u] + e.cost){
+			else if(S[start] == e.state && d[e.to] > d[u] + e.cost){
+				parent[e.to] = u;
 				d[e.to] = d[u] + e.cost;
 				pri_q.push(Node(e.to, d[e.to]));
 			}
 		}
 	}
+
+	find_route(end);
 
 	return d[end];
 }
@@ -69,13 +83,19 @@ int main(){
 
 	int start, end, sum = 0;
 	cin >> K >> N >> start;
+	route.push_back(start);
 	for(int i = 1; i < N; i++){
 		cin >> end;
 		sum += Dijkstra(start, end);
 		start = end;
 	}
 
-	cout << sum << endl;
+	cout << "The minimum cost is: " << sum << endl;
+	cout << "The path:" << endl;
+	for(int64_t i = 0; i < route.size(); i++){
+		if(i == route.size() - 1) cout << route[i] << endl;
+		else cout << route[i] << " -> ";
+	}
 
 	return 0;
 }

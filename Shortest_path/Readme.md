@@ -12,11 +12,13 @@ tags: 作業
 - 程式碼
 ```cpp
 int Dijkstra(int start, int end){
-    int d[MAX_N];    //record shortest path
-    priority_queue<Node> pri_q;    //min-heap
-    fill(d, d + V + 1, INT_MAX);   //initialize
+    int d[MAX_N];
+    priority_queue<Node> pri_q;
+    fill(d, d + V + 1, INT_MAX);
+    memset(parent, 0, sizeof(parent));
 
     d[start] = 0;
+    parent[start] = start;
     pri_q.push(Node(start, d[start]));
 
     while(!pri_q.empty()){
@@ -24,21 +26,23 @@ int Dijkstra(int start, int end){
         pri_q.pop();
 
         int u = p.v;
-        if(d[u] < p.k) continue;    //if the node's path > d[u], skip
+        if(d[u] < p.k) continue;
 
         for(Edge e : G[u]){
-            //node u and edge e are different state
-            if(S[u] != e.state && d[e.to] > d[u] + K * e.cost){
+            if(S[start] != e.state && d[e.to] > d[u] + K * e.cost){
+                parent[e.to] = u;
                 d[e.to] = d[u] + K * e.cost;
                 pri_q.push(Node(e.to, d[e.to]));
             }
-            //node u and edge e are the same state
-            else if(d[e.to] > d[u] + e.cost){
+            else if(S[start] == e.state && d[e.to] > d[u] + e.cost){
+                parent[e.to] = u;
                 d[e.to] = d[u] + e.cost;
                 pri_q.push(Node(e.to, d[e.to]));
             }
         }
     }
+
+    find_route(end);
 
     return d[end];
 }
