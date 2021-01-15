@@ -42,7 +42,7 @@ int Dijkstra(int start, int end){
 				d[e.to] = d[u] + K * e.cost;
 				pri_q.push(Node(e.to, d[e.to]));
 			}
-			else if(d[e.to] > d[u] + e.cost){
+			else if(S[u] == e.state && d[e.to] > d[u] + e.cost){
 				d[e.to] = d[u] + e.cost;
 				pri_q.push(Node(e.to, d[e.to]));
 			}
